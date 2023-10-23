@@ -37,7 +37,7 @@ class PlanAndExecute(BaseAgent):
 
     def run(self, settings: AccountSettings, chat_pubsub_service: ChatPubSubService, team: TeamModel, prompt: str, history: PostgresChatMessageHistory, human_message_id: UUID):
         agents: List[TeamAgentModel] = team.team_agents
-        
+
         planner_agent_with_configs: AgentWithConfigsOutput = None
         executor_agent_with_configs: AgentWithConfigsOutput = None
 
@@ -51,7 +51,7 @@ class PlanAndExecute(BaseAgent):
         ai_message_id = ai_message['id']
 
         def on_thoughts(thoughts: List[Dict]):
-            if len(thoughts) == 0:
+            if not thoughts:
                 raise PlannerEmptyTasksException()
 
             updated_message = history.update_thoughts(ai_message_id, thoughts)
@@ -70,7 +70,7 @@ class PlanAndExecute(BaseAgent):
 
         planner_llm = ChatOpenAI(openai_api_key=settings.openai_api_key, temperature=planner_agent_with_configs.configs.temperature, model_name=planner_agent_with_configs.configs.model_version)
         planner_system_message = SystemMessageBuilder(planner_agent_with_configs).build()
-        
+
         planner = initialize_chat_planner(planner_llm, planner_system_message, memory)
 
         executor_llm = ChatOpenAI(openai_api_key=settings.openai_api_key, temperature=executor_agent_with_configs.configs.temperature, model_name=executor_agent_with_configs.configs.model_version)
@@ -97,5 +97,5 @@ class PlanAndExecute(BaseAgent):
             history.delete_message(ai_message_id)
             ai_message = history.create_ai_message(res)
             chat_pubsub_service.send_chat_message(chat_message=ai_message)
-        
+
         return res

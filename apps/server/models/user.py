@@ -118,13 +118,19 @@ class UserModel(RootBaseModel):
             Returns:
                 User: User object is returned.
         """
-        # return db.session.query(UserModel).filter(UserModel.account_id == account.id, or_(or_(UserModel.is_deleted == False, UserModel.is_deleted is None), UserModel.is_deleted is None)).all()
-        users = (
+        return (
             db.session.query(UserModel)
-            .filter(UserModel.id == user_id, or_(or_(UserModel.is_deleted == False, UserModel.is_deleted is None), UserModel.is_deleted is None))
+            .filter(
+                UserModel.id == user_id,
+                or_(
+                    or_(
+                        UserModel.is_deleted == False, UserModel.is_deleted is None
+                    ),
+                    UserModel.is_deleted is None,
+                ),
+            )
             .first()
         )
-        return users
     
     @classmethod
     def get_user_by_email(cls, db, email):
@@ -138,13 +144,19 @@ class UserModel(RootBaseModel):
             Returns:
                 User: User object is returned.
         """
-        # return db.session.query(UserModel).filter(UserModel.account_id == account.id, or_(or_(UserModel.is_deleted == False, UserModel.is_deleted is None), UserModel.is_deleted is None)).all()
-        users = (
+        return (
             db.session.query(UserModel)
-            .filter(UserModel.email == email, or_(or_(UserModel.is_deleted == False, UserModel.is_deleted is None), UserModel.is_deleted is None))
+            .filter(
+                UserModel.email == email,
+                or_(
+                    or_(
+                        UserModel.is_deleted == False, UserModel.is_deleted is None
+                    ),
+                    UserModel.is_deleted is None,
+                ),
+            )
             .first()
         )
-        return users
 
     @classmethod
     def delete_by_id(cls, db, user_id, account):

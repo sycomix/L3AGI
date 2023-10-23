@@ -122,9 +122,7 @@ Prompt the next speaker to speak with an insightful question.
                 HumanMessage(content=choice_prompt),
             ]
         ).content
-        choice = int(self.choice_parser.parse(choice_string)["choice"])
-
-        return choice
+        return int(self.choice_parser.parse(choice_string)["choice"])
 
     def select_next_speaker(self):
         return self.chosen_speaker_id

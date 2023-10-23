@@ -37,39 +37,35 @@ TOOLKITS: List[BaseToolkit] = [
 
 def get_all_tools():
     """Return a list of all tools."""
-    result = []
-
-    for toolkit in TOOLKITS:
-        result.append(
-            {
-                "toolkit_id": toolkit.toolkit_id,
-                "is_public": True,
-                "is_active": toolkit.is_active,
-                "name": toolkit.name,
-                "slug": toolkit.slug,
-                "description": toolkit.description,
-                "fields": [
-                    {
-                        "label": env_key.label,
-                        "key": env_key.key,
-                        "type": str(env_key.key_type),
-                        "is_required": env_key.is_required,
-                        "is_secret": env_key.is_secret,
-                    }
-                    for env_key in toolkit.get_env_keys()
-                ],
-                "tools": [
-                    {
-                        "tool_id": tool.tool_id,
-                        "name": tool.name,
-                        "description": tool.description,
-                    }
-                    for tool in toolkit.get_tools()
-                ],
-            }
-        )
-
-    return result
+    return [
+        {
+            "toolkit_id": toolkit.toolkit_id,
+            "is_public": True,
+            "is_active": toolkit.is_active,
+            "name": toolkit.name,
+            "slug": toolkit.slug,
+            "description": toolkit.description,
+            "fields": [
+                {
+                    "label": env_key.label,
+                    "key": env_key.key,
+                    "type": str(env_key.key_type),
+                    "is_required": env_key.is_required,
+                    "is_secret": env_key.is_secret,
+                }
+                for env_key in toolkit.get_env_keys()
+            ],
+            "tools": [
+                {
+                    "tool_id": tool.tool_id,
+                    "name": tool.name,
+                    "description": tool.description,
+                }
+                for tool in toolkit.get_tools()
+            ],
+        }
+        for toolkit in TOOLKITS
+    ]
 
 
 def get_agent_tools(toolkit_ids: List[str], db, account, settings) ->  List[BaseTool]:

@@ -52,13 +52,7 @@ class AuthoritarianSpeaker(BaseAgent):
         If the step is even, then select the director
         Otherwise, the director selects the next speaker.
         """
-        # the director speaks on odd steps
-        if step % 2 == 1:
-            idx = 0
-        else:
-            # here the director chooses the next speaker
-            idx = director.select_next_speaker() + 1  # +1 because we excluded the director
-        return idx
+        return 0 if step % 2 == 1 else director.select_next_speaker() + 1
     
     def generate_specified_prompt(self, topic, agent_summary, team):
         description = """
@@ -69,19 +63,22 @@ class AuthoritarianSpeaker(BaseAgent):
         Be creative and imaginative.
         Please reply with the specified topic in {word_limit} words or less. 
         Do not add anything else."""
-        
+
 
         if team.description:
             description = team.description
-        
+
         content = description.format(user_input=topic, word_limit=self.word_limit, agents=agent_summary)  
 
         topic_specifier_prompt = [
             SystemMessage(content="You can make a topic more specific."),
             HumanMessage(content=content),
         ]
-        specified_topic = ChatOpenAI(openai_api_key=self.settings.openai_api_key, temperature=1.0, model_name="gpt-4")(topic_specifier_prompt).content
-        return specified_topic
+        return ChatOpenAI(
+            openai_api_key=self.settings.openai_api_key,
+            temperature=1.0,
+            model_name="gpt-4",
+        )(topic_specifier_prompt).content
     
     def get_tools(self, agent_with_configs: AgentWithConfigsOutput, settings: AccountSettings):
         datasources = db.session.query(DatasourceModel).filter(DatasourceModel.id.in_(agent_with_configs.configs.datasources)).all()

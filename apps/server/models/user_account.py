@@ -93,12 +93,7 @@ class UserAccountModel(BaseModel):
             if getattr(query, field):
                 filter_conditions.append(getattr(UserAccountModel, field) == getattr(query, field))
 
-        user_accounts = (
-            db.session.query(UserAccountModel)
-            .filter(*filter_conditions)
-            .all()
-        )
-        return user_accounts
+        return db.session.query(UserAccountModel).filter(*filter_conditions).all()
 
     @classmethod
     def get_user_account_by_id(cls, db, user_account_id, account):
@@ -112,13 +107,20 @@ class UserAccountModel(BaseModel):
             Returns:
                 UserAccount: UserAccount object is returned.
         """
-        # return db.session.query(UserAccountModel).filter(UserAccountModel.account_id == account.id, or_(or_(UserAccountModel.is_deleted == False, UserAccountModel.is_deleted is None), UserAccountModel.is_deleted is None)).all()
-        user_accounts = (
+        return (
             db.session.query(UserAccountModel)
-            .filter(UserAccountModel.id == user_account_id, or_(or_(UserAccountModel.is_deleted == False, UserAccountModel.is_deleted is None), UserAccountModel.is_deleted is None))
+            .filter(
+                UserAccountModel.id == user_account_id,
+                or_(
+                    or_(
+                        UserAccountModel.is_deleted == False,
+                        UserAccountModel.is_deleted is None,
+                    ),
+                    UserAccountModel.is_deleted is None,
+                ),
+            )
             .first()
         )
-        return user_accounts
 
     @classmethod
     def delete_by_id(cls, db, user_account_id):

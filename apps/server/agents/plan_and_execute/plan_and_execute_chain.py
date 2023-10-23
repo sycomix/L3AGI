@@ -56,7 +56,7 @@ class PlanAndExecuteChain(Chain):
                 "current_step": step,
                 "objective": inputs[self.input_key],
             }
-            new_inputs = {**_new_inputs, **inputs}
+            new_inputs = _new_inputs | inputs
 
             response = self.executor.step(
                 new_inputs,

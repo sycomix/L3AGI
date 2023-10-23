@@ -62,12 +62,11 @@ class ChartGeneratorTool(BaseTool):
                 base64_image = body["result"]
 
                 chart_id = uuid.uuid4()
-                
+
                 key = f"account_{self.account.id}/chat/chart-{chart_id}.png"
                 img_data = io.BytesIO(base64.b64decode(base64_image))
 
-                url = AWSS3Service.upload(body=img_data, key=key, content_type='image/png')
-                return url
+                return AWSS3Service.upload(body=img_data, key=key, content_type='image/png')
             else:
                 return "Could not generate chart"
         except Exception as e:

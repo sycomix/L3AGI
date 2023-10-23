@@ -49,15 +49,15 @@ def create_user_message(body: ChatMessageInput, auth: UserAccount):
     account = auth.account
     user = auth.user
     session_id = get_chat_session_id(auth.user.id, auth.account.id, body.is_private_chat, body.agent_id, body.team_id)
-    
+
     prompt = body.prompt
-    agents: List[AgentWithConfigsOutput] = []    
-    prompt = body.prompt    
+    agents: List[AgentWithConfigsOutput] = []
+    prompt = body.prompt
     agents, prompt = handle_agent_mentions(prompt, auth, agents)
     agents = append_agent_to_list(body.agent_id, account, agents)
     agents, prompt = retrieve_parent_message_and_agent(body.parent_id, account, agents, prompt)
-    
-    team_configs = {}  
+
+    team_configs = {}
     team_configs, team = retrieve_team_configs(body.team_id, account, team_configs)
 
 
@@ -74,18 +74,18 @@ def create_user_message(body: ChatMessageInput, auth: UserAccount):
     # If team member is tagged and no agent or team of agents is tagged, this means user sends a message to team member
     # if has_team_member_mention(body.prompt) and not mentioned_agent_id and not mentioned_team_id:
     #     return ""
-    
+
     settings = ConfigModel.get_account_settings(db, auth.account)
 
     if not settings.openai_api_key:
-        message_text = f"Please add OpenAI API key in [Settings](/settings)"
+        message_text = "Please add OpenAI API key in [Settings](/settings)"
         ai_message = history.create_ai_message(message_text, human_message_id)
         memory.save_human_message(body.prompt)
         memory.save_ai_message(message_text)
         chat_pubsub_service.send_chat_message(chat_message=ai_message)
 
         return message_text
-    
+
 
     if len(agents) > 0:
         for agent_with_configs in agents:

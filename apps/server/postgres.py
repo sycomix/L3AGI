@@ -23,10 +23,7 @@ class ChatMessageJSONEncoder(json.JSONEncoder):
         if isinstance(obj, UUID):
             # if the obj is uuid, we simply return the value of uuid
             return str(obj)
-        if isinstance(obj, datetime):
-            # for datetime objects, convert to string in your preferred format
-            return obj.isoformat()
-        return super().default(obj)
+        return obj.isoformat() if isinstance(obj, datetime) else super().default(obj)
 
 
 class PostgresChatMessageHistory(BaseChatMessageHistory):

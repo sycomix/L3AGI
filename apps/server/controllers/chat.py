@@ -110,18 +110,16 @@ def get_chat_messages(agent_id: Optional[UUID] = None, team_id: Optional[UUID] =
         agent_id (Optional[UUID]): Agent id
         team_id (Optional[UUID]): Team of agents id
     """
-    team: Optional[TeamModel] = None
     agent: Optional[TeamModel] = None
     session_id: Optional[str] = None
-    if team_id:
-        team = TeamModel.get_team_by_id_with_account(db, team_id)
+    team = TeamModel.get_team_by_id_with_account(db, team_id) if team_id else None
     if agent_id:
         agent = AgentModel.get_agent_by_id_with_account(db, agent_id)
     if team and (team.is_public or team.is_template):
         session_id = get_chat_session_id(team.creator.id, team.account.id, False, agent_id, team_id)
     if agent and (agent.is_public or agent.is_template):
         session_id = get_chat_session_id(agent.creator.id, agent.account.id, False, agent_id, team_id)
-        
+
     if not session_id:
         raise HTTPException(status_code=401, detail="Unauthorized")
     chat_messages = (db.session.query(ChatMessageModel)
@@ -130,7 +128,7 @@ def get_chat_messages(agent_id: Optional[UUID] = None, team_id: Optional[UUID] =
                  .limit(50)
                  .options(joinedload(ChatMessageModel.agent), joinedload(ChatMessageModel.team), joinedload(ChatMessageModel.parent), joinedload(ChatMessageModel.creator))
                  .all())
-    
+
     chat_messages = [chat_message.to_dict() for chat_message in chat_messages]
     chat_messages.reverse()
 

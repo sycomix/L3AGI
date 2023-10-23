@@ -180,45 +180,62 @@ class AgentModel(BaseModel):
 
     @classmethod
     def get_agents(cls, db, account):
-        agents = (
+        return (
             db.session.query(AgentModel)
             # .join(AgentConfigModel, AgentModel.id == AgentConfigModel.agent_id)
-            .join(UserModel, AgentModel.created_by == UserModel.id)           
-            .filter(AgentModel.account_id == account.id, or_(or_(AgentModel.is_deleted == False, AgentModel.is_deleted is None), AgentModel.is_deleted is None))
+            .join(UserModel, AgentModel.created_by == UserModel.id).filter(
+                AgentModel.account_id == account.id,
+                or_(
+                    or_(
+                        AgentModel.is_deleted == False,
+                        AgentModel.is_deleted is None,
+                    ),
+                    AgentModel.is_deleted is None,
+                ),
+            )
             # .options(joinedload(AgentModel.configs))  # if you have a relationship set up named "configs"
             .options(joinedload(AgentModel.creator))
             # .options(joinedload(AgentModel.configs))  # if you have a relationship set up named "configs"
             # .options(joinedload(UserModel.agents))
             .all()
         )
-        return agents
 
     @classmethod
     def get_template_agents(cls, db):
-        agents = (
-            db.session.query(AgentModel) 
-            .filter(or_(AgentModel.is_deleted == False, AgentModel.is_deleted.is_(None)),
-                    AgentModel.is_template == True)
+        return (
+            db.session.query(AgentModel)
+            .filter(
+                or_(
+                    AgentModel.is_deleted == False, AgentModel.is_deleted.is_(None)
+                ),
+                AgentModel.is_template == True,
+            )
             .options(joinedload(AgentModel.creator))
-            .options(joinedload(AgentModel.configs))  # if you have a relationship set up named "configs"
+            .options(
+                joinedload(AgentModel.configs)
+            )  # if you have a relationship set up named "configs"
             .all()
-        )
-        return agents  
+        )  
 
     @classmethod
     def get_public_agents(cls, db):
-        agents = (
+        return (
             db.session.query(AgentModel)
             # .join(AgentConfigModel, AgentModel.id == AgentConfigModel.agent_id)
-            .join(UserModel, AgentModel.created_by == UserModel.id)           
-            .filter(or_(AgentModel.is_deleted == False, AgentModel.is_deleted.is_(None)),
-                    AgentModel.is_public == True)
+            .join(UserModel, AgentModel.created_by == UserModel.id)
+            .filter(
+                or_(
+                    AgentModel.is_deleted == False, AgentModel.is_deleted.is_(None)
+                ),
+                AgentModel.is_public == True,
+            )
             .options(joinedload(AgentModel.creator))
-            .options(joinedload(AgentModel.configs))  # if you have a relationship set up named "configs"
+            .options(
+                joinedload(AgentModel.configs)
+            )  # if you have a relationship set up named "configs"
             # .options(joinedload(UserModel.agents))
             .all()
-        )
-        return agents    
+        )    
     
 
     @classmethod
@@ -233,18 +250,28 @@ class AgentModel(BaseModel):
             Returns:
                 Agent: Agent object is returned.
         """
-        agent = (
+        return (
             db.session.query(AgentModel)
             .join(AgentConfigModel, AgentModel.id == AgentConfigModel.agent_id)
-            .join(UserModel, AgentModel.created_by == UserModel.id)           
-            .filter(AgentModel.id == agent_id, or_(or_(AgentModel.is_deleted == False, AgentModel.is_deleted is None), AgentModel.is_deleted is None))
-            .options(joinedload(AgentModel.configs))  # if you have a relationship set up named "configs"
+            .join(UserModel, AgentModel.created_by == UserModel.id)
+            .filter(
+                AgentModel.id == agent_id,
+                or_(
+                    or_(
+                        AgentModel.is_deleted == False,
+                        AgentModel.is_deleted is None,
+                    ),
+                    AgentModel.is_deleted is None,
+                ),
+            )
+            .options(
+                joinedload(AgentModel.configs)
+            )  # if you have a relationship set up named "configs"
             .options(joinedload(AgentModel.creator))
             # .options(joinedload(AgentModel.configs))  # if you have a relationship set up named "configs"
             # .options(joinedload(UserModel.agents))
             .first()
         )
-        return agent
     
     @classmethod
     def get_by_parent_id(cls, db, parent_id, account):
@@ -258,21 +285,29 @@ class AgentModel(BaseModel):
             Returns:
                 Agent: Agent object is returned.
         """
-        agent = (
+        return (
             db.session.query(AgentModel)
             .join(AgentConfigModel, AgentModel.id == AgentConfigModel.agent_id)
-            .join(UserModel, AgentModel.created_by == UserModel.id)           
-            .filter(AgentModel.parent_id == parent_id, 
-                    AgentModel.account_id == account.id, 
-                    or_(or_(AgentModel.is_deleted == False, AgentModel.is_deleted is None),
-                    AgentModel.is_deleted is None))
-            .options(joinedload(AgentModel.configs))  # if you have a relationship set up named "configs"
+            .join(UserModel, AgentModel.created_by == UserModel.id)
+            .filter(
+                AgentModel.parent_id == parent_id,
+                AgentModel.account_id == account.id,
+                or_(
+                    or_(
+                        AgentModel.is_deleted == False,
+                        AgentModel.is_deleted is None,
+                    ),
+                    AgentModel.is_deleted is None,
+                ),
+            )
+            .options(
+                joinedload(AgentModel.configs)
+            )  # if you have a relationship set up named "configs"
             .options(joinedload(AgentModel.creator))
             # .options(joinedload(AgentModel.configs))  # if you have a relationship set up named "configs"
             # .options(joinedload(UserModel.agents))
             .first()
         )
-        return agent
     
     
     
@@ -288,20 +323,29 @@ class AgentModel(BaseModel):
             Returns:
                 Agent: Agent object is returned.
         """
-        # return db.session.query(AgentModel).filter(AgentModel.account_id == account.id, or_(or_(AgentModel.is_deleted == False, AgentModel.is_deleted is None), AgentModel.is_deleted is None)).all()
-        agents = (
+        return (
             db.session.query(AgentModel)
             .join(AgentConfigModel, AgentModel.id == AgentConfigModel.agent_id)
-            .join(UserModel, AgentModel.created_by == UserModel.id)           
-            .filter(AgentModel.id == agent_id, or_(or_(AgentModel.is_deleted == False, AgentModel.is_deleted is None), AgentModel.is_deleted is None))
-            .options(joinedload(AgentModel.configs))  # if you have a relationship set up named "configs"
+            .join(UserModel, AgentModel.created_by == UserModel.id)
+            .filter(
+                AgentModel.id == agent_id,
+                or_(
+                    or_(
+                        AgentModel.is_deleted == False,
+                        AgentModel.is_deleted is None,
+                    ),
+                    AgentModel.is_deleted is None,
+                ),
+            )
+            .options(
+                joinedload(AgentModel.configs)
+            )  # if you have a relationship set up named "configs"
             .options(joinedload(AgentModel.creator))
             .options(joinedload(AgentModel.account))
             # .options(joinedload(AgentModel.configs))  # if you have a relationship set up named "configs"
             # .options(joinedload(UserModel.agents))
             .first()
         )
-        return agents
 
     @classmethod
     def delete_by_id(cls, db, agent_id, account):

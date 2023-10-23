@@ -42,6 +42,5 @@ class FileDatasourceTool(BaseTool):
 
         retriever = FileDatasourceRetriever(self.settings, index_type, response_mode, str(self.account.id), datasource_id)
         retriever.load_index()
-        result = retriever.query(question)
-        return result
+        return retriever.query(question)
 

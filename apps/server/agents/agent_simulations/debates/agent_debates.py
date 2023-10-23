@@ -42,8 +42,7 @@ class AgentDebates(BaseAgent):
         self.chat_pubsub_service = chat_pubsub_service
  
     def select_next_speaker(self, step: int, agents: List[DialogueAgent]) -> int:
-        idx = (step) % len(agents)
-        return idx  
+        return (step) % len(agents)  
     
     def generate_specified_prompt(self, topic, agent_summary, team):
         description = """
@@ -54,18 +53,21 @@ class AgentDebates(BaseAgent):
         Speak directly to the participants: {agents}.
         Focus on your tools, and data which is provided, don't create any temp game
         Do not add anything else."""
-        
+
         if team.description:
             description = team.description
-        
+
         content = description.format(user_input=topic, word_limit=self.word_limit, agents=agent_summary)  
 
         topic_specifier_prompt = [
             SystemMessage(content="You can make a topic more specific."),
             HumanMessage(content=content),
         ]
-        specified_topic = ChatOpenAI(openai_api_key=self.settings.openai_api_key, temperature=1.0, model_name="gpt-4")(topic_specifier_prompt).content
-        return specified_topic
+        return ChatOpenAI(
+            openai_api_key=self.settings.openai_api_key,
+            temperature=1.0,
+            model_name="gpt-4",
+        )(topic_specifier_prompt).content
         
 
     def get_tools(self, agent_with_configs: AgentWithConfigsOutput, settings: AccountSettings):
@@ -85,10 +87,10 @@ class AgentDebates(BaseAgent):
             [""] + [f"{agent_config.agent.name}: {agent_config.agent.role}" for agent_config in agents_with_configs]
         )
 
-        
+
         specified_topic= topic #self.generate_specified_prompt(topic, agent_summary_string, team)
 
-        print(f"Original topic:\n{topic}\n")
+        print(f"Original topic:\n{specified_topic}\n")
         print(f"Detailed topic:\n{specified_topic}\n")
 
         memory = ZepMemory(
@@ -132,23 +134,23 @@ class AgentDebates(BaseAgent):
 
         while n < max_iters:
             status_config = ConfigModel.get_config_by_session_id(db, self.session_id, self.account)
-            
+
             if status_config.value == ChatStatus.STOPPED.value:
                 break
 
             agent_id, agent_name, message = simulator.step()
-            
+
             db.session.refresh(status_config)
 
             if status_config.value == ChatStatus.STOPPED.value:
                 break
 
             ai_message = history.create_ai_message(message, None, agent_id)
-            
+
             if team.is_memory:
                 memory.ai_name = agent_name
                 memory.save_ai_message(message)
-            
+
             self.chat_pubsub_service.send_chat_message(chat_message=ai_message)
 
             n += 1

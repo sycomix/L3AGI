@@ -44,7 +44,7 @@ class TwilioSendTool(BaseTool):
         if not from_number:
             raise ToolEnvKeyException(f"Please fill Twilio From Number in the [Twilio Toolkit](/toolkits/{self.toolkit_slug})")
 
-        
+
         twilio = TwilioAPIWrapper(
             account_sid=account_sid,
             auth_token=auth_token,
@@ -55,6 +55,6 @@ class TwilioSendTool(BaseTool):
 
         try:
             sid = twilio.run(message.strip(), phone.strip())
-            return "Text message was sent successfully. Message SID: " + sid
+            return f"Text message was sent successfully. Message SID: {sid}"
         except Exception as err:
-            return "Error: " + str(err)
+            return f"Error: {str(err)}"

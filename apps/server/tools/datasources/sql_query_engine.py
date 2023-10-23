@@ -49,15 +49,11 @@ class SQLQueryEngine:
 
         table_node_mapping = SQLTableNodeMapping(self.sql_database)
 
-        # TODO: research about saving index
-
-        obj_index = ObjectIndex.from_objects(
+        return ObjectIndex.from_objects(
             table_schema_objs,
             table_node_mapping,
             VectorStoreIndex,
         )
-
-        return obj_index
 
 
     def create_query_engine(self, obj_index, template: str):
@@ -75,15 +71,13 @@ class SQLQueryEngine:
 
         set_global_service_context(service_context)
 
-        query_engine = SQLTableRetrieverQueryEngine(
+        return SQLTableRetrieverQueryEngine(
             sql_database=self.sql_database,
             table_retriever=obj_index.as_retriever(similarity_top_k=4),
             synthesize_response=False,
             text_to_sql_prompt=text_to_sql_prompt,
             service_context=service_context,
         )
-
-        return query_engine
 
 
     def create_sql_query_engine(self, obj_index: ObjectIndex):

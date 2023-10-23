@@ -76,43 +76,74 @@ class AccountModel(BaseModel):
 
     @classmethod
     def get_accounts(cls, db):
-        accounts = (
+        return (
             db.session.query(AccountModel)
-            .filter(or_(or_(AccountModel.is_deleted == False, AccountModel.is_deleted is None), AccountModel.is_deleted is None))
+            .filter(
+                or_(
+                    or_(
+                        AccountModel.is_deleted == False,
+                        AccountModel.is_deleted is None,
+                    ),
+                    AccountModel.is_deleted is None,
+                )
+            )
             .all()
         )
-        return accounts
     
 
     @classmethod
     def get_account_by_id(cls, db, account_id):
-        accounts = (
+        return (
             db.session.query(AccountModel)
-            .filter(AccountModel.id == account_id, or_(or_(AccountModel.is_deleted == False, AccountModel.is_deleted is None), AccountModel.is_deleted is None))
+            .filter(
+                AccountModel.id == account_id,
+                or_(
+                    or_(
+                        AccountModel.is_deleted == False,
+                        AccountModel.is_deleted is None,
+                    ),
+                    AccountModel.is_deleted is None,
+                ),
+            )
             .first()
         )
-        return accounts
     
     @classmethod
     def get_account_created_by(cls, db, user_id):
-        accounts = (
+        return (
             db.session.query(AccountModel)
-            .filter(AccountModel.created_by == user_id, or_(or_(AccountModel.is_deleted == False, AccountModel.is_deleted is None), AccountModel.is_deleted is None))
+            .filter(
+                AccountModel.created_by == user_id,
+                or_(
+                    or_(
+                        AccountModel.is_deleted == False,
+                        AccountModel.is_deleted is None,
+                    ),
+                    AccountModel.is_deleted is None,
+                ),
+            )
             .first()
         )
-        return accounts
     
     @classmethod
     def get_account_by_access(cls, db, user_id, account_id):
        
-        accounts = (
-             db.session.query(AccountModel)
+        return (
+            db.session.query(AccountModel)
             .join(UserAccountModel, AccountModel.id == UserAccountModel.account_id)
-            .filter(UserAccountModel.account_id == account_id, or_(or_(AccountModel.is_deleted == False, AccountModel.is_deleted is None), AccountModel.is_deleted is None))
+            .filter(
+                UserAccountModel.account_id == account_id,
+                or_(
+                    or_(
+                        AccountModel.is_deleted == False,
+                        AccountModel.is_deleted is None,
+                    ),
+                    AccountModel.is_deleted is None,
+                ),
+            )
             # .options(joinedload(AgentModel.configs))  # if you have a relationship set up named "configs"
             .first()
         )
-        return accounts
 
     @classmethod
     def delete_by_id(cls, db, account_id):

@@ -26,11 +26,10 @@ class AzurePubSubService:
         """Gets a client access token for the given user_id"""
 
         try:
-            response = self.service.get_client_access_token(
+            return self.service.get_client_access_token(
                 user_id=user_id,
-                roles=["webpubsub.sendToGroup", "webpubsub.joinLeaveGroup"]
+                roles=["webpubsub.sendToGroup", "webpubsub.joinLeaveGroup"],
             )
-            return response
         except AzureError as err:
             sentry_sdk.capture_exception(err)
 
@@ -77,7 +76,4 @@ class PubSubJSONEncoder(json.JSONEncoder):
         if isinstance(obj, UUID):
             # if the obj is uuid, we simply return the value of uuid
             return str(obj)
-        if isinstance(obj, datetime):
-            # for datetime objects, convert to string in your preferred format
-            return obj.isoformat()
-        return super().default(obj)
+        return obj.isoformat() if isinstance(obj, datetime) else super().default(obj)

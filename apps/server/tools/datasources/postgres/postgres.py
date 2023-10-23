@@ -35,11 +35,12 @@ class PostgresDatabaseTool(BaseTool):
         question, datasource_id = query.split(';')
         configs = db.session.query(ConfigModel).where(ConfigModel.datasource_id == datasource_id, ConfigModel.is_deleted == False).all()
 
-        config = {}
-
-        for cfg in configs:
-            config[cfg.key] = decrypt_data(cfg.value) if is_encrypted(cfg.value) else cfg.value
-
+        config = {
+            cfg.key: decrypt_data(cfg.value)
+            if is_encrypted(cfg.value)
+            else cfg.value
+            for cfg in configs
+        }
         user = config.get('user')
         password = config.get('pass')
         host = config.get('host')
@@ -48,6 +49,5 @@ class PostgresDatabaseTool(BaseTool):
 
         uri = f"postgresql+psycopg2://{user}:{password}@{host}:{port}/{name}"
 
-        result = SQLQueryEngine(self.settings, uri).run(question)
-        return result
+        return SQLQueryEngine(self.settings, uri).run(question)
 

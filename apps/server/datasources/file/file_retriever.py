@@ -85,5 +85,4 @@ class FileDatasourceRetriever:
 
     def query(self, query_str):
         query_engine = self.index.as_query_engine(response_mode=self.response_mode, service_context=self.service_context)
-        result = query_engine.query(query_str)
-        return result
+        return query_engine.query(query_str)

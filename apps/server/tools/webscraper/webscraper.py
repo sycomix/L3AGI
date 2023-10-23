@@ -72,8 +72,9 @@ class WebScraperTool(BaseTool):
                 for tag in soup(['script', 'style', 'nav', 'footer', 'head', 'link', 'meta', 'noscript']):
                     tag.decompose()
 
-                main_content_areas = soup.find_all(['main', 'article', 'section', 'div'])
-                if main_content_areas:
+                if main_content_areas := soup.find_all(
+                    ['main', 'article', 'section', 'div']
+                ):
                     main_content = max(main_content_areas, key=lambda x: len(x.text))
                     content_tags = ['p', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'a']
                     content = ' '.join([tag.text.strip() for tag in main_content.find_all(content_tags)])
@@ -84,7 +85,7 @@ class WebScraperTool(BaseTool):
                 content = re.sub(r'\s+', ' ', content)
                 return content
             elif response.status_code == 404:
-                return f"Error: 404. Url is invalid or does not exist. Try with valid url..."
+                return "Error: 404. Url is invalid or does not exist. Try with valid url..."
             else:
                 print(f"Error while extracting text from HTML (bs4): {response.status_code}")
                 return f"Error while extracting text from HTML (bs4): {response.status_code}"

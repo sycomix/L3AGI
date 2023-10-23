@@ -102,12 +102,20 @@ class ApiKeyModel(BaseModel):
 
     @classmethod
     def get_api_keys(cls, db, account):
-        api_keys = (
+        return (
             db.session.query(ApiKeyModel)
-            .filter(ApiKeyModel.account_id == account.id, or_(or_(ApiKeyModel.is_deleted == False, ApiKeyModel.is_deleted is None), ApiKeyModel.is_deleted is None))
+            .filter(
+                ApiKeyModel.account_id == account.id,
+                or_(
+                    or_(
+                        ApiKeyModel.is_deleted == False,
+                        ApiKeyModel.is_deleted is None,
+                    ),
+                    ApiKeyModel.is_deleted is None,
+                ),
+            )
             .all()
         )
-        return api_keys
 
     @classmethod
     def get_api_key_by_id(cls, db, api_key_id, account):
@@ -121,13 +129,20 @@ class ApiKeyModel(BaseModel):
             Returns:
                 ApiKey: ApiKey object is returned.
         """
-        # return db.session.query(ApiKeyModel).filter(ApiKeyModel.account_id == account.id, or_(or_(ApiKeyModel.is_deleted == False, ApiKeyModel.is_deleted is None), ApiKeyModel.is_deleted is None)).all()
-        api_keys = (
+        return (
             db.session.query(ApiKeyModel)
-            .filter(ApiKeyModel.id == api_key_id, or_(or_(ApiKeyModel.is_deleted == False, ApiKeyModel.is_deleted is None), ApiKeyModel.is_deleted is None))
+            .filter(
+                ApiKeyModel.id == api_key_id,
+                or_(
+                    or_(
+                        ApiKeyModel.is_deleted == False,
+                        ApiKeyModel.is_deleted is None,
+                    ),
+                    ApiKeyModel.is_deleted is None,
+                ),
+            )
             .first()
         )
-        return api_keys
 
     @classmethod
     def delete_by_id(cls, db, api_key_id, account):

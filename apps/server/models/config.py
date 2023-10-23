@@ -185,13 +185,21 @@ class ConfigModel(BaseModel):
             Returns:
                 Config: Config object is returned.
         """
-        config = (
+        return (
             db.session.query(ConfigModel)
-            .filter(ConfigModel.session_id == session_id, ConfigModel.account_id == account.id, or_(or_(ConfigModel.is_deleted == False, ConfigModel.is_deleted is None), ConfigModel.is_deleted is None))
+            .filter(
+                ConfigModel.session_id == session_id,
+                ConfigModel.account_id == account.id,
+                or_(
+                    or_(
+                        ConfigModel.is_deleted == False,
+                        ConfigModel.is_deleted is None,
+                    ),
+                    ConfigModel.is_deleted is None,
+                ),
+            )
             .first()
         )
-   
-        return config
     
     @classmethod
     def get_account_settings(cls, db, account) -> AccountSettings:
@@ -203,11 +211,12 @@ class ConfigModel(BaseModel):
             .all()
         )
 
-        config = {}
-
-        for cfg in configs:
-            config[cfg.key] = decrypt_data(cfg.value) if is_encrypted(cfg.value) else cfg.value
-
+        config = {
+            cfg.key: decrypt_data(cfg.value)
+            if is_encrypted(cfg.value)
+            else cfg.value
+            for cfg in configs
+        }
         return AccountSettings(openai_api_key=config.get("open_api_key"), hugging_face_auth_token=config.get("hugging_face_token"))
 
     @classmethod

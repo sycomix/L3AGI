@@ -49,13 +49,11 @@ class ChatModel(BaseModel):
             Returns:
                 Chat message: Chat message object is returned.
         """
-        chat = (
+        return (
             db.session.query(ChatModel)
             .filter(ChatModel.id == chat_id, ChatModel.account_id == account.id)
             .first()
         )
-
-        return chat
     
     @classmethod
     def create_chat(cls, db, chat: ChatInput, user, account):
@@ -89,14 +87,21 @@ class ChatModel(BaseModel):
     
     @classmethod
     def get_chats(cls, db, account):
-        agents = (
+        return (
             db.session.query(ChatModel)
-            .join(UserModel, ChatModel.created_by == UserModel.id)           
-            .filter(ChatModel.account_id == account.id, or_(or_(ChatModel.is_deleted == False, ChatModel.is_deleted is None), ChatModel.is_deleted is None))
+            .join(UserModel, ChatModel.created_by == UserModel.id)
+            .filter(
+                ChatModel.account_id == account.id,
+                or_(
+                    or_(
+                        ChatModel.is_deleted == False, ChatModel.is_deleted is None
+                    ),
+                    ChatModel.is_deleted is None,
+                ),
+            )
             .options(joinedload(ChatModel.creator))
             .all()
         )
-        return agents
     
     @classmethod
     def delete_by_id(cls, db, agent_id, account):

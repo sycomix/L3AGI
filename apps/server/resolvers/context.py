@@ -25,8 +25,7 @@ class Context(BaseContext):
             return None
         account_id = self.request.headers.get('account_id', None)
         auth = AuthJWT(self.request, self.response)
-        user_account = authorize(account_id, auth)
-        return user_account
+        return authorize(account_id, auth)
 
 
 Info = _Info[Context, RootValueType]

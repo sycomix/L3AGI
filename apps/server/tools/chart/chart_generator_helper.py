@@ -49,15 +49,9 @@ def generate_chart_code_chain(openai_api_key: str) -> LLMChain:
 def extract_code(text: str) -> str:
     """Extract code from Markdown text."""
 
-    # Match triple backtick blocks first
-    triple_match = re.search(r"```(?:\w+\n)?(.+?)```", text, re.DOTALL)
-
-    if triple_match:
+    if triple_match := re.search(r"```(?:\w+\n)?(.+?)```", text, re.DOTALL):
         return triple_match.group(1).strip()
-    else:
-        # If no triple backtick blocks, match single backtick blocks
-        single_match = re.search(r"`(.+?)`", text, re.DOTALL)
-        if single_match:
-            return single_match.group(1).strip()
+    if single_match := re.search(r"`(.+?)`", text, re.DOTALL):
+        return single_match.group(1).strip()
     # If no code blocks found, return original text
     return text

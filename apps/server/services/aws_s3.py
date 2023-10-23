@@ -11,7 +11,7 @@ class AWSS3Service:
     """AWS S3 Service"""
 
     @staticmethod
-    def upload(body, key: str, content_type: str):    
+    def upload(body, key: str, content_type: str):
         """Upload image to S3 bucket"""
 
         s3_client.put_object(
@@ -21,8 +21,7 @@ class AWSS3Service:
             ContentType=content_type,
         )
 
-        public_url = AWSS3Service.get_public_url(key)
-        return public_url
+        return AWSS3Service.get_public_url(key)
     
     @staticmethod
     def generate_presigned_url(key: str, content_type: str):

@@ -19,7 +19,7 @@ def convert_value_to_type(value, target_type):
             # For this case, we'll just return the value as is, since we don't
             # know which type to convert it to among the Union types.
             return value
-    
+
     if target_type == bool:
         return bool(value)
     elif target_type == int:
@@ -29,14 +29,11 @@ def convert_value_to_type(value, target_type):
     elif target_type == str:
         return str(value)
     elif target_type == uuid.UUID:
-        if isinstance(value, uuid.UUID):
-            return value
-        return uuid.UUID(value)
+        return value if isinstance(value, uuid.UUID) else uuid.UUID(value)
     elif hasattr(target_type, "__origin__") and target_type.__origin__ == list:
         inner_type = target_type.__args__[0]
         if isinstance(value, str) and value.startswith('[') and value.endswith(']'):
             value = ast.literal_eval(value)
-        converted_list = [convert_value_to_type(item, inner_type) for item in value]
-        return converted_list
+        return [convert_value_to_type(item, inner_type) for item in value]
     else:
         return value

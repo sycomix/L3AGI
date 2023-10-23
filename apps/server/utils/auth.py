@@ -46,8 +46,9 @@ def generate_token(subject, jwt_authorizer: AuthJWT = Depends()):
     if token_config is None:
         token_config = 300
     token_expiry_time = timedelta(hours=token_config)
-    token = jwt_authorizer.create_access_token(subject=subject, expires_time=token_expiry_time)
-    return token
+    return jwt_authorizer.create_access_token(
+        subject=subject, expires_time=token_expiry_time
+    )
 
 def redirect_to_frontend(frontend_url):
     """Redirect to frontend URL"""
@@ -59,6 +60,4 @@ def get_user_data_from_github(access_token):
     headers = {'Authorization': f'Bearer {access_token}'}
     response = requests.get(github_api_url, headers=headers)
 
-    if response.ok:
-        return response.json()
-    return None
+    return response.json() if response.ok else None

@@ -123,12 +123,20 @@ class DatasourceModel(BaseModel):
 
     @classmethod
     def get_datasources(cls, db, account):
-        datasources = (
+        return (
             db.session.query(DatasourceModel)
-            .filter(DatasourceModel.account_id == account.id, or_(or_(DatasourceModel.is_deleted == False, DatasourceModel.is_deleted is None), DatasourceModel.is_deleted is None))
+            .filter(
+                DatasourceModel.account_id == account.id,
+                or_(
+                    or_(
+                        DatasourceModel.is_deleted == False,
+                        DatasourceModel.is_deleted is None,
+                    ),
+                    DatasourceModel.is_deleted is None,
+                ),
+            )
             .all()
         )
-        return datasources
 
     @classmethod
     def get_datasource_by_id(cls, db, datasource_id, account):
@@ -142,13 +150,20 @@ class DatasourceModel(BaseModel):
             Returns:
                 Datasource: Datasource object is returned.
         """
-        # return db.session.query(DatasourceModel).filter(DatasourceModel.account_id == account.id, or_(or_(DatasourceModel.is_deleted == False, DatasourceModel.is_deleted is None), DatasourceModel.is_deleted is None)).all()
-        datasources = (
+        return (
             db.session.query(DatasourceModel)
-            .filter(DatasourceModel.id == datasource_id, or_(or_(DatasourceModel.is_deleted == False, DatasourceModel.is_deleted is None), DatasourceModel.is_deleted is None))
+            .filter(
+                DatasourceModel.id == datasource_id,
+                or_(
+                    or_(
+                        DatasourceModel.is_deleted == False,
+                        DatasourceModel.is_deleted is None,
+                    ),
+                    DatasourceModel.is_deleted is None,
+                ),
+            )
             .first()
         )
-        return datasources
 
     @classmethod
     def delete_by_id(cls, db, datasource_id, account):

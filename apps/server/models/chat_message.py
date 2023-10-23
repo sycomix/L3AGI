@@ -48,13 +48,14 @@ class ChatMessage(BaseModel):
             Returns:
                 Chat message: Chat message object is returned.
         """
-        chat_message = (
+        return (
             db.session.query(ChatMessage)
-            .filter(ChatMessage.id == chat_message_id, ChatMessage.account_id == account.id)
+            .filter(
+                ChatMessage.id == chat_message_id,
+                ChatMessage.account_id == account.id,
+            )
             .first()
         )
-
-        return chat_message
 
     def to_dict(self):
         """

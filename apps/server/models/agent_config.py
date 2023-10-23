@@ -45,8 +45,8 @@ class AgentConfigModel(BaseModel):
         """
         return f"AgentConfig(id={self.id}, key={self.key}, value={self.value})" 
     
-    @classmethod 
-    def create_or_update(cls, db, agent, update_configs, user, account):  
+    @classmethod
+    def create_or_update(cls, db, agent, update_configs, user, account):
         """
         Create or update agent configurations in the database.
 
@@ -63,9 +63,11 @@ class AgentConfigModel(BaseModel):
         ).all()
         changes= []
         for key in ConfigInput.__annotations__.keys():
-            #search db_configs 
-            matching_configs = [config for config in db_configs if getattr(config, "key", None) == key]
-            if(matching_configs):
+            if matching_configs := [
+                config
+                for config in db_configs
+                if getattr(config, "key", None) == key
+            ]:
                 db_config = matching_configs[0]
                 db_config.value = str(getattr(update_configs, key))
                 db_config.modified_by = user.id
@@ -78,11 +80,11 @@ class AgentConfigModel(BaseModel):
                 )
                 new_config.created_by = user.id
                 changes.append(new_config)
-        
+
         db.session.add_all(changes)
-        db.session.commit()                
+        db.session.commit()
         db.session.flush()
-        
+
         return changes
     
     @classmethod 

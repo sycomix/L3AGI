@@ -138,12 +138,7 @@ class TeamAgentModel(BaseModel):
             if getattr(query, field):
                 filter_conditions.append(getattr(TeamAgentModel, field) == getattr(query, field))
 
-        team_agents = (
-            db.session.query(TeamAgentModel)
-            .filter(*filter_conditions)
-            .all()
-        )
-        return team_agents
+        return db.session.query(TeamAgentModel).filter(*filter_conditions).all()
 
     @classmethod
     def get_team_agent_by_id(cls, db, team_agent_id, account):
@@ -157,13 +152,20 @@ class TeamAgentModel(BaseModel):
             Returns:
                 TeamAgent: TeamAgent object is returned.
         """
-        # return db.session.query(TeamAgentModel).filter(TeamAgentModel.account_id == account.id, or_(or_(TeamAgentModel.is_deleted == False, TeamAgentModel.is_deleted is None), TeamAgentModel.is_deleted is None)).all()
-        team_agents = (
+        return (
             db.session.query(TeamAgentModel)
-            .filter(TeamAgentModel.id == team_agent_id, or_(or_(TeamAgentModel.is_deleted == False, TeamAgentModel.is_deleted is None), TeamAgentModel.is_deleted is None))
+            .filter(
+                TeamAgentModel.id == team_agent_id,
+                or_(
+                    or_(
+                        TeamAgentModel.is_deleted == False,
+                        TeamAgentModel.is_deleted is None,
+                    ),
+                    TeamAgentModel.is_deleted is None,
+                ),
+            )
             .first()
         )
-        return team_agents
 
     @classmethod
     def delete_by_id(cls, db, team_agent_id, account):
